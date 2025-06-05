@@ -12,7 +12,6 @@ app = Flask(__name__)
 # Initialize OpenAI client
 client = OpenAI(api_key="sk-PUcrvcutjmwACPxL4zUD3IJxgLM5VoZ6tQzx53qM40jzWcRZ", base_url="https://api.moonshot.cn/v1")
 
-#sk-f7f85f122702495291e0eb374de42e12
 # Get list of fonts from the fonts folder
 def get_fonts():
     fonts_dir = os.path.join(app.static_folder, 'fonts')  # Path to the fonts folder
