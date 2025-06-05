@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classical Chinese Letter Generator</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            color: #34495e;
+            margin-bottom: 15px;
+        }
+
+        .letter-section {
+            margin-bottom: 40px;
+            padding: 5px;
+            background-color: #f1f3f5;
+            border-radius: 8px;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .letter-content {
+            font-family: 'SimSun', serif;
+            font-size: 18px;
+            line-height: 1.6;
+            background-image: url('{{ url_for("static", filename="background.jpg") }}');
+            background-size: cover;
+            padding: 20px 40px 20px 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            height: 400px;
+            display: flex;
+            justify-content: right;
+            align-items: center;
+        }
+
+        .classical-chinese {
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            white-space: pre-wrap;
+            line-height: 1.6;
+            column-gap: 2em;
+            height: 300px;
+            position: relative;
+        }
+
+        .classical-chinese.letter-style {
+            column-gap: 2em;
+            background: linear-gradient(to right, transparent 1px, transparent 1px), 
+                        linear-gradient(to right, rgb(230, 212, 212) 1px, transparent 1px);
+            background-size: 1.6em 100%;
+            background-position: 0em 0;
+            position: relative;
+        }
+
+        .content-edit-section {
+            margin-top: 30px; /* Default margin */
+        }
+
+        .input-section {
+            margin-top: 30px;
+        }
+
+        .input-section .form-row {
+            display: flex;
+            gap: 20px;
+            align-items: stretch;
+        }
+
+        .input-section .form-group {
+            flex: 1;
+            margin-bottom: 15px;
+        }
+
+        .input-section .form-row .form-group {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        .input-section .form-row select {
+            height: 40px;
+            margin: 0;
+            padding: 0 10px;
+        }
+
+        .input-section .form-row button {
+            font-size: 14px;
+            width: 100px;
+            padding: 8px 16px;
+            height: 40px;
+            margin: 0;
+        }
+
+        .input-section textarea {
+            width: 97%;
+            padding: 10px;
+            font-size: 14px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: none;
+        }
+
+        .input-section label {
+            font-size: 1.1rem;
+            color: #34495e;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .input-section select {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #ffffff;
+        }
+
+        .input-section button {
+            width: 100%;
+            padding: 12px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .input-section button:hover {
+            background-color: #0056b3;
+        }
+
+        .submit-button {
+            height: auto;
+            padding: 8px 16px;
+            font-size: 14px;
+            background-color: #fff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            align-self: stretch;
+        }
+
+        .submit-button:hover {
+            background-color: #fff;
+        }
+
+        /* Define custom fonts */
+        {% for font in fonts %}
+        @font-face {
+            font-family: '{{ font }}';
+            src: url('{{ url_for("static", filename="fonts/" + font + ".TTF") }}') format('truetype');
+        }
+        {% endfor %}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="letter-container">
+            <!-- Top section: Generated letter -->
+            <div class="letter-section">
+                <div class="letter-content">
+                    {% if letter_content %}
+                        <div class="classical-chinese">{{ letter_content }}<div id="seal-container" style="position: absolute; z-index: 1;"></div></div>
+                    {% else %}
+                        <div class="classical-chinese">大风吹
+                            落魄谷中寒风吹，春秋蝉鸣少年归。荡魂山处石人泪，定仙游走魔向北。 逆流河上万仙退，爱情不敌坚持泪。宿命天成命中败。仙尊悔而我不悔。
+                            乙巳年芒种</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="input-container">
+            <!-- Bottom section: Input form and font selection -->
+            <div class="input-section">
+                <form method="POST">
+                    <div class="form-row">
+                        <div style="height: 100%; display: flex; align-items: stretch;">
+                            <img id="back-image" src="{{ url_for('static', filename='left.png') }}" alt="后退" class="submit-button" style="height: 75px; width: 50px; cursor: pointer; display: none;">
+                        </div>
+                        <div class="form-group" id="prompt-group">
+                            <textarea name="prompt" rows="4" placeholder="请输入你的内容">生成一篇聊斋短文，250字左右</textarea>
+                        </div>
+                        <div class="form-group" id="content-edit-section" style="display: none;">
+                            <textarea id="content_edit" name="content_edit" rows="4" placeholder="编辑你的信件内容">{{ letter_content if letter_content else '' }}</textarea>
+                        </div>
+                        <div style="height: 100%; display: flex; align-items: stretch;">
+                            <img id="submit-image" src="{{ url_for('static', filename='right.png') }}" alt="试试看" class="submit-button" style="height: 75px; width: 50px; cursor: pointer;">
+                            <img id="loading-indicator" src="{{ url_for('static', filename='loading.webp') }}" alt="加载中" style="display: none; margin-left: 10px; height: 75px; width: 75px;">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <select id="font-select">
+                                {% for font in fonts %}
+                                    <option value="{{ font }}">{{ font }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select id="background-select">
+                                <option value="#f8f6e8">白纸</option>
+                                <option value="#ebe2c3">黄纸</option>
+                                <option value="#eddba7">旧纸</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select id="letter-style-select">
+                                <option value="letter-style">信纸风格</option>
+                                <option value="none">无</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select id="seal-select" multiple>
+                                {% for seal in seals %}
+                                    <option value="{{ seal }}">{{ seal.split('.')[0] }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript to apply the selected font, background, letter style, and seals
+        const fontSelect = document.getElementById('font-select');
+        const backgroundSelect = document.getElementById('background-select');
+        const letterStyleSelect = document.getElementById('letter-style-select');
+        const sealSelect = document.getElementById('seal-select');
+        const classicalChinese = document.querySelector('.classical-chinese');
+        const letterContent = document.querySelector('.letter-content');
+        const contentEdit = document.getElementById('content_edit');
+        const backImage = document.getElementById('back-image');
+        const loadingIndicator = document.getElementById('loading-indicator');
+
+        // Function to update the background based on the selected option
+        function updateBackground() {
+            const selectedBackground = backgroundSelect.value;
+            if (selectedBackground === "#eddba7") {
+                // Load yellow.png when "黄纸" is selected
+                letterContent.style.backgroundImage = "url('{{ url_for('static', filename='yellow.png') }}')";
+            } else {
+                // Reset to the default background for other options
+                letterContent.style.backgroundImage = "url('{{ url_for('static', filename='background.jpg') }}')";
+            }
+        }
+
+        // Function to place the selected seals randomly on the classical-chinese area
+        function placeSeals() {
+            const selectedSeals = Array.from(sealSelect.selectedOptions).map(option => option.value);
+            const sealContainer = document.getElementById('seal-container');
+            if (!sealContainer) {
+                console.error("seal-container not found!");
+                return;
+            }
+            sealContainer.innerHTML = ''; // Clear previous seals
+
+            // Define the central region to avoid (100px x 50px)
+            const avoidCenterWidth = 200;
+            const avoidCenterHeight = 200;
+            const centerX = (classicalChinese.offsetWidth - avoidCenterWidth) / 2;
+            const centerY = (classicalChinese.offsetHeight - avoidCenterHeight) / 2;
+
+            selectedSeals.forEach(seal => {
+                // Create an image element for the seal
+                const sealImage = document.createElement('img');
+                sealImage.src = "{{ url_for('static', filename='seals/') }}" + seal;
+                sealImage.style.position = 'absolute';
+                sealImage.style.width = '50px'; // Adjust size as needed
+                sealImage.style.height = '50px'; // Adjust size as needed
+
+                // Randomly position the seal within the classical-chinese area, avoiding the central region
+                let randomX, randomY;
+                do {
+                    randomX = Math.floor(Math.random() * (classicalChinese.offsetWidth - 50)); // Adjust for image width
+                    randomY = Math.floor(Math.random() * (classicalChinese.offsetHeight - 50)); // Adjust for image height
+                } while (
+                    randomX >= centerX && randomX <= centerX + avoidCenterWidth &&
+                    randomY >= centerY && randomY <= centerY + avoidCenterHeight
+                );
+
+                // Ensure the seal is within the bounds of the container
+                randomX = Math.max(0, Math.min(randomX, classicalChinese.offsetWidth - 50));
+                randomY = Math.max(0, Math.min(randomY, classicalChinese.offsetHeight - 50));
+
+                sealImage.style.left = `${randomX}px`;
+                sealImage.style.top = `${randomY}px`;
+
+                // Add the seal to the container
+                sealContainer.appendChild(sealImage);
+            });
+        }
+
+        // Function to set default styles on page load
+        function setDefaultStyles() {
+            // Set default font
+            const defaultFont = fontSelect.options[0].value; // Get the first font in the dropdown
+            classicalChinese.style.fontFamily = defaultFont;
+
+            // Set default background
+            const defaultBackground = backgroundSelect.options[0].value; // Get the first background in the dropdown
+            letterContent.style.backgroundColor = defaultBackground;
+            updateBackground(); // Set the default background image
+
+            // Set default letter style
+            const defaultLetterStyle = letterStyleSelect.options[0].value; // Get the first letter style in the dropdown
+            classicalChinese.classList.toggle('letter-style', defaultLetterStyle === 'letter-style');
+
+            // Show backImage if letter_content exists (i.e., after form submission)
+            if ({{ 'true' if letter_content else 'false' }}) {
+                backImage.style.display = 'block';
+                submitImage.style.display = 'none';
+            }
+        }
+
+        // Apply the selected font when the dropdown changes
+        fontSelect.addEventListener('change', () => {
+            classicalChinese.style.fontFamily = fontSelect.value;
+        });
+
+        // Apply the selected background when the dropdown changes
+        backgroundSelect.addEventListener('change', () => {
+            letterContent.style.backgroundColor = backgroundSelect.value;
+            updateBackground(); // Update the background image when the background changes
+        });
+
+        // Apply the selected letter style when the dropdown changes
+        letterStyleSelect.addEventListener('change', () => {
+            classicalChinese.classList.toggle('letter-style', letterStyleSelect.value === 'letter-style');
+        });
+
+        // Apply the selected seals when the dropdown changes
+        sealSelect.addEventListener('change', placeSeals);
+
+        // Function to update the classical-chinese content when content_edit is modified
+        contentEdit.addEventListener('input', () => {
+            // Update the classical-chinese content
+            classicalChinese.textContent = contentEdit.value;
+
+            // Recreate the seal-container inside the classical-chinese div
+            const sealContainer = document.createElement('div');
+            sealContainer.id = 'seal-container';
+            sealContainer.style.position = 'absolute';
+            sealContainer.style.top = '0';
+            sealContainer.style.left = '0';
+            sealContainer.style.width = '100%';
+            sealContainer.style.height = '100%';
+            sealContainer.style.zIndex = '1';
+
+            // Append the seal-container to the classical-chinese div
+            classicalChinese.appendChild(sealContainer);
+
+            // Reapply the seals
+            placeSeals();
+        });
+
+        // Function to reset the seal selection
+        function resetSealSelection() {
+            sealSelect.selectedIndex = -1; // Deselect all options
+            placeSeals(); // Clear the seals from the letter
+        }
+
+        // Add event listener to the form to reset the seal selection on submit
+        const form = document.querySelector('form');
+        form.addEventListener('submit', () => {
+            resetSealSelection(); // Reset the seal selection
+        });
+
+        // Function to initialize the seal selection
+        function initializeSealSelection() {
+            sealSelect.addEventListener('change', placeSeals); // Reattach the event listener
+            placeSeals(); // Place the seals based on the current selection
+        }
+
+        // Call the function on page load
+        window.onload = function() {
+            setDefaultStyles();
+            toggleEditMode();
+            initializeSealSelection(); // Initialize the seal selection
+            placeSeals(); // Place the seals based on the current selection
+        };
+
+        // JavaScript to toggle visibility of prompt and content_edit sections
+        const promptGroup = document.getElementById('prompt-group');
+        const contentEditSection = document.getElementById('content-edit-section');
+        const submitImage = document.getElementById('submit-image');
+
+        // Function to toggle edit mode
+        function toggleEditMode() {
+            if ({{ 'true' if letter_content else 'false' }}) {
+                promptGroup.style.display = 'none'; // Hide prompt section
+                contentEditSection.style.display = 'block'; // Show content_edit section
+                submitImage.style.display = 'none'; // Hide the right image in edit mode
+
+                // Enable dropdowns in edit mode
+                fontSelect.disabled = false;
+                backgroundSelect.disabled = false;
+                letterStyleSelect.disabled = false;
+                sealSelect.disabled = false;
+            } else {
+                promptGroup.style.display = 'block'; // Show prompt section
+                contentEditSection.style.display = 'none'; // Hide content_edit section
+                submitImage.style.display = 'block'; // Show the right image in non-edit mode
+
+                // Disable dropdowns in non-edit mode
+                fontSelect.disabled = true;
+                backgroundSelect.disabled = true;
+                letterStyleSelect.disabled = true;
+                sealSelect.disabled = true;
+            }
+        }
+
+        // Add event listener to the submit-image to toggle visibility and submit the form
+        submitImage.addEventListener('click', () => {
+            loadingIndicator.style.display = 'block'; // Show loading indicator
+            submitImage.style.display = 'none'; // Hide submit-image
+            backImage.style.display = 'block'; // Show back-image
+
+            form.submit(); // Submit the form
+        });
+
+        // Add event listener to the back-image to redirect to the index page
+        backImage.addEventListener('click', () => {
+            window.location.href = "/"; // Redirect to the index page
+        });
+    </script>
+</body>
+</html> 
