@@ -18,6 +18,16 @@ def get_fonts():
     fonts = [f for f in os.listdir(fonts_dir) if f.endswith(('.TTF', '.otf'))]  # Filter font files
     return [os.path.splitext(f)[0] for f in fonts]  # Remove file extensions
 
+# Function to get the list of seal images from the static/seals folder
+def get_seals():
+    seals_dir = os.path.join(app.static_folder, 'seals')
+    return [f for f in os.listdir(seals_dir) if f.endswith(('.png', '.jpg', '.jpeg', '.gif'))]
+
+# Function to get the list of background images from the static/background folder
+def get_backgrounds():
+    backgrounds_dir = os.path.join(app.static_folder, 'background')
+    return [f for f in os.listdir(backgrounds_dir) if f.endswith(('.png', '.jpg', '.jpeg', '.gif'))]
+
 # Function to generate a letter using DeepSeek API
 def generate_letter_with_deepseek(prompt):
     fake = False
@@ -34,16 +44,12 @@ def generate_letter_with_deepseek(prompt):
         )
         return response.choices[0].message.content
 
-# Function to get the list of seal images from the static/seals folder
-def get_seals():
-    seals_dir = os.path.join(app.static_folder, 'seals')
-    return [f for f in os.listdir(seals_dir) if f.endswith(('.png', '.jpg', '.jpeg', '.gif'))]
-
 # Home route
 @app.route("/", methods=["GET", "POST"])
 def home():
     fonts = get_fonts()  # Get list of fonts
     seals = get_seals()  # Get the list of seal images
+    backgrounds = get_backgrounds()  # Get the list of background images
     if request.method == "POST":
         # Get user input for the letter content
         prompt = request.form.get("prompt")
@@ -57,10 +63,10 @@ def home():
             lines[i] = " " + lines[i]  # Add space to the beginning of the paragraph
         letter_content = "\n".join(lines)  # Join lines back into a single string
         
-        # Render the template with the generated letter and fonts
-        return render_template("index.html", letter_content=letter_content, prompt=prompt, fonts=fonts, seals=seals)
+        # Render the template with the generated letter, fonts, seals, and background image
+        return render_template("index.html", letter_content=letter_content, prompt=prompt, fonts=fonts, seals=seals, backgrounds=backgrounds)
     
-    return render_template("index.html", fonts=fonts, seals=seals)
+    return render_template("index.html", fonts=fonts, seals=seals, backgrounds=backgrounds)
 
 # Route to serve dynamic CSS
 @app.route("/styles.css")

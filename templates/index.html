@@ -47,7 +47,7 @@
             font-family: 'SimSun', serif;
             font-size: 18px;
             line-height: 1.6;
-            background-image: url('{{ url_for("static", filename="background.jpg") }}');
+            background-color: #f8f6e8;
             background-size: cover;
             padding: 20px 40px 20px 20px;
             border: 1px solid #ddd;
@@ -192,7 +192,7 @@
         <div class="letter-container">
             <!-- Top section: Generated letter -->
             <div class="letter-section">
-                <div class="letter-content">
+                <div class="letter-content" id="letter-content">
                     {% if letter_content %}
                         <div class="classical-chinese">{{ letter_content }}<div id="seal-container" style="position: absolute; z-index: 1;"></div></div>
                     {% else %}
@@ -212,7 +212,7 @@
                             <img id="back-image" src="{{ url_for('static', filename='left.png') }}" alt="后退" class="submit-button" style="height: 75px; width: 50px; cursor: pointer; display: none;">
                         </div>
                         <div class="form-group" id="prompt-group">
-                            <textarea name="prompt" rows="4" placeholder="请输入你的内容">生成一篇聊斋短文，250字左右</textarea>
+                            <textarea name="prompt" rows="4" placeholder="请输入你的内容">生成一篇古文，220字左右</textarea>
                         </div>
                         <div class="form-group" id="content-edit-section" style="display: none;">
                             <textarea id="content_edit" name="content_edit" rows="4" placeholder="编辑你的信件内容">{{ letter_content if letter_content else '' }}</textarea>
@@ -230,12 +230,15 @@
                                 {% endfor %}
                             </select>
                         </div>
-                        <div class="form-group">
-                            <select id="background-select">
-                                <option value="#f8f6e8">白纸</option>
-                                <option value="#ebe2c3">黄纸</option>
-                                <option value="#eddba7">旧纸</option>
-                            </select>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <select id="backgroundSelect" name="background">
+                                    <option value="">淡黄背景</option>
+                                    {% for background in backgrounds %}
+                                    <option value="{{ background }}">{{ background }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
                         </div>
                         <div class="form-group">
                             <select id="letter-style-select">
@@ -259,7 +262,7 @@
     <script>
         // JavaScript to apply the selected font, background, letter style, and seals
         const fontSelect = document.getElementById('font-select');
-        const backgroundSelect = document.getElementById('background-select');
+        const backgroundSelect = document.getElementById('backgroundSelect');
         const letterStyleSelect = document.getElementById('letter-style-select');
         const sealSelect = document.getElementById('seal-select');
         const classicalChinese = document.querySelector('.classical-chinese');
@@ -457,6 +460,27 @@
         // Add event listener to the back-image to redirect to the index page
         backImage.addEventListener('click', () => {
             window.location.href = "/"; // Redirect to the index page
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const backgroundSelect = document.getElementById('backgroundSelect');
+            const letterContent = document.getElementById('letter-content');
+
+            if (backgroundSelect && letterContent) {
+                backgroundSelect.addEventListener('change', () => {
+                    if (backgroundSelect.value) {
+                        // Set the background image using the selected value
+                        letterContent.style.backgroundImage = `url("{{ url_for('static', filename='background/') }}${backgroundSelect.value}")`;
+                        letterContent.style.backgroundSize = 'cover';
+                    } else {
+                        // If no background is selected, remove the background image
+                        letterContent.style.backgroundImage = 'none';
+                        letterContent.style.backgroundColor = '#f8f6e8'; // Default background color
+                    }
+                });
+            } else {
+                console.error('Element not found: backgroundSelect or letter-content');
+            }
         });
     </script>
 </body>
