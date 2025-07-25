@@ -2,7 +2,7 @@
 
 This project is a web application built with Flask that generates classical Chinese letters using the DeepSeek/KIMI API. Users can input a prompt, and the application will generate a letter in classical Chinese style. The application also allows users to choose from a variety of fonts and seals to customize the letter.
 
-![](static/ccg.png)
+![](src/static/ccg.png)
 
 ## Features
 
