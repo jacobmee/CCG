@@ -1,5 +1,6 @@
+# Ignore VS Code settings
+.vscode/
 .ftpconfig
 .DS_Store
 *.log
 *.data
-.vscode
