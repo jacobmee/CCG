@@ -1,0 +1,16 @@
+[project]
+name = "ccg"
+version = "0.1.0"
+description = "Classical Chinese Letter Generator web app using Flask."
+authors = [
+    { name = "jacobmee" }
+]
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "flask",
+    # Add other dependencies here, e.g. "openai", "pillow"
+]
+
+[tool.uv]
+# uv-specific settings can be added here if needed

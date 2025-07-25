@@ -11,22 +11,26 @@ This project is a web application built with Flask that generates classical Chin
 - **Seal Images**: Allows users to add custom seal images to the letter.
 - **Dynamic Backgound**: Generates Backgound dynamically to apply selected fonts.
 
+
 ## Setup
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/jacobmee/classical-chinese-letter-generator.git
-   cd classical-chinese-letter-generator
-   ```
+### Recommended: Using [uv](https://github.com/astral-sh/uv)
 
-2. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
+1. **Install uv**:
+   ```sh
+   curl -Ls https://astral.sh/uv/install.sh | sh
+   ```
+   Or see the uv repo for other install methods.
+
+
+2. **Install dependencies** (choose one):
+   ```sh
+   uv sync
    ```
 
 3. **Run the application**:
-   ```bash
-   ./run.sh
+   ```sh
+   uv run app.py
    ```
 
 4. **Access the application**:

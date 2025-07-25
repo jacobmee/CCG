@@ -1,3 +1,0 @@
-# Requirements for CCG project
-flask
-# Add other dependencies as needed, e.g. openai, pillow, etc.
